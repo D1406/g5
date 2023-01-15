@@ -1,10 +1,12 @@
 package app;
 
+import io.github.humbleui.jwm.MouseButton;
 import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Paint;
 import io.github.humbleui.skija.Rect;
 import misc.CoordinateSystem2d;
 import misc.CoordinateSystem2i;
+import misc.Vector2d;
 import misc.Vector2i;
 
 import java.util.ArrayList;
@@ -33,7 +35,10 @@ public class Task {
      * Список точек
      */
     private final ArrayList<Point> points;
-
+    /**
+     * последняя СК окна
+     */
+    protected CoordinateSystem2i lastWindowCS;
     /**
      * Задача
      *
@@ -62,5 +67,35 @@ public class Task {
             }
         }
         canvas.restore();
+        // Сохраняем последнюю СК
+        lastWindowCS = windowCS;
+    }
+    /**
+     * Клик мыши по пространству задачи
+     *
+     * @param pos         положение мыши
+     * @param mouseButton кнопка мыши
+     */
+    public void click(Vector2i pos, MouseButton mouseButton) {
+        if (lastWindowCS == null) return;
+        // получаем положение на экране
+        Vector2d taskPos = ownCS.getCoords(pos, lastWindowCS);
+        // если левая кнопка мыши, добавляем в первое множество
+        if (mouseButton.equals(MouseButton.PRIMARY)) {
+            addPoint(taskPos, Point.PointSet.FIRST_SET);
+            // если правая, то во второе
+        } else if (mouseButton.equals(MouseButton.SECONDARY)) {
+            addPoint(taskPos, Point.PointSet.SECOND_SET);
+        }
+    }
+    /**
+     * Добавить точку
+     *
+     * @param pos      положение
+     * @param pointSet множество
+     */
+    public void addPoint(Vector2d pos, Point.PointSet pointSet) {
+        Point newPoint = new Point(pos, pointSet);
+        points.add(newPoint);
     }
 }

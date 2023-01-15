@@ -9,6 +9,7 @@ import io.github.humbleui.skija.RRect;
 import io.github.humbleui.skija.Surface;
 import misc.CoordinateSystem2i;
 import misc.Misc;
+import misc.Vector2i;
 import panels.PanelControl;
 import panels.PanelHelp;
 import panels.PanelLog;
@@ -160,10 +161,12 @@ public class Application implements Consumer<Event> {
             // получаем поверхность рисования
             Surface s = ee.getSurface();
             // очищаем её канвас заданным цветом
-            paint(s.getCanvas(), new CoordinateSystem2i(
-                    s.getWidth() / 3, s.getHeight() / 3,
-                    s.getWidth() / 3,  s.getHeight() / 3));
+            paint(s.getCanvas(), new CoordinateSystem2i(s.getWidth(), s.getHeight()));
 
         }
+        panelControl.accept(e);
+        panelRendering.accept(e);
+        panelLog.accept(e);
+
     }
 }
