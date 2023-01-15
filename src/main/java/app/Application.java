@@ -27,6 +27,7 @@ public class Application implements Consumer<Event> {
      * Конструктор окна приложения
      */
     public Application() {
+
         // создаём окно
         window = App.makeWindow();
         // задаём обработчиком событий текущий объект
@@ -73,6 +74,10 @@ public class Application implements Consumer<Event> {
      * @param canvas   низкоуровневый инструмент рисования примитивов от Skija
      * @param windowCS СК окна
      */
+    /**
+     * радиус скругления элементов
+     */
+    public static final int C_RAD_IN_PX = 4;
     public void paint(Canvas canvas, CoordinateSystem2i windowCS) {
         // запоминаем изменения (пока что там просто заливка цветом)
         canvas.save();
