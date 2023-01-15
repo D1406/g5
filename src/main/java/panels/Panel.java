@@ -1,5 +1,6 @@
 package panels;
 
+import app.Task;
 import io.github.humbleui.jwm.*;
 import io.github.humbleui.skija.Canvas;
 import io.github.humbleui.skija.Paint;
@@ -30,7 +31,10 @@ public abstract class Panel implements Consumer<Event> {
      * цвет подложки
      */
     protected final int backgroundColor;
-
+    /**
+     * Представление проблемы
+     */
+    public static Task task;
     /**
      * Конструктор панели
      *

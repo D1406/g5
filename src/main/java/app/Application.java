@@ -55,6 +55,10 @@ public class Application implements Consumer<Event> {
     /**
      * Конструктор окна приложения
      */
+    /**
+     * Представление проблемы
+     */
+    public static Task task;
     public Application() {
         // создаём окно
         window = App.makeWindow();
@@ -78,6 +82,7 @@ public class Application implements Consumer<Event> {
                 window, true, PANEL_BACKGROUND_COLOR, PANEL_PADDING, 5, 3, 3, 2,
                 2, 1
         );
+
         // задаём обработчиком событий текущий объект
         window.setEventListener(this);
         window.setTitle("Java 2D");
