@@ -8,6 +8,7 @@ import misc.CoordinateSystem2d;
 import misc.CoordinateSystem2i;
 import misc.Vector2d;
 import misc.Vector2i;
+import panels.PanelLog;
 
 import java.util.ArrayList;
 
@@ -97,5 +98,7 @@ public class Task {
     public void addPoint(Vector2d pos, Point.PointSet pointSet) {
         Point newPoint = new Point(pos, pointSet);
         points.add(newPoint);
+        // Добавляем в лог запись информации
+        PanelLog.info("точка " + newPoint + " добавлена в " + newPoint.getSetName());
     }
 }
