@@ -1,14 +1,14 @@
 package panels;
 
+import app.Point;
 import app.Task;
 import java.util.ArrayList;
-import controls.Input;
-import controls.InputFactory;
-import controls.Label;
-import controls.MultiLineLabel;
+
+import controls.*;
 import io.github.humbleui.jwm.*;
 import io.github.humbleui.skija.Canvas;
 import misc.CoordinateSystem2i;
+import misc.Vector2d;
 import misc.Vector2i;
 
 import java.util.List;
@@ -33,7 +33,10 @@ public class PanelControl extends GridPanel {
      * Поля ввода
      */
     public List<Input> inputs;
-
+    /**
+     * Кнопки
+     */
+    public List<Button> buttons;
     /**
      * Панель управления
      *
@@ -53,7 +56,7 @@ public class PanelControl extends GridPanel {
             int gridX, int gridY, int colspan, int rowspan
     ) {
         super(window, drawBG, color, padding, gridWidth, gridHeight, gridX, gridY, colspan, rowspan);
-
+        buttons = new ArrayList<>();
         // создаём списки
         inputs = new ArrayList<>();
         labels = new ArrayList<>();
@@ -78,6 +81,41 @@ public class PanelControl extends GridPanel {
                 6, 7, 4, 2, 2, 1, "0.0", true,
                 FIELD_TEXT_COLOR, true);
         inputs.add(yField);
+
+        Button addToFirstSet = new Button(
+                window, false, backgroundColor, PANEL_PADDING,
+                6, 7, 0, 3, 3, 1, "Добавить в первое\nмножество",
+                true, true);
+        addToFirstSet.setOnClick(() -> {
+            // если числа введены верно
+            if (!xField.hasValidDoubleValue()) {
+                PanelLog.warning("X координата введена неверно");
+            } else if (!yField.hasValidDoubleValue())
+                PanelLog.warning("Y координата введена неверно");
+            else
+                PanelRendering.task.addPoint(
+                        new Vector2d(xField.doubleValue(), yField.doubleValue()), Point.PointSet.FIRST_SET
+                );
+        });
+        buttons.add(addToFirstSet);
+
+        Button addToSecondSet = new Button(
+                window, false, backgroundColor, PANEL_PADDING,
+                6, 7, 3, 3, 3, 1, "Добавить во второе\nмножество",
+                true, true);
+        addToSecondSet.setOnClick(() -> {
+            // если числа введены верно
+            if (!xField.hasValidDoubleValue()) {
+                PanelLog.warning("X координата введена неверно");
+            } else if (!yField.hasValidDoubleValue())
+                PanelLog.warning("Y координата введена неверно");
+            else {
+                PanelRendering.task.addPoint(
+                        new Vector2d(xField.doubleValue(), yField.doubleValue()), Point.PointSet.SECOND_SET
+                );
+            }
+        });
+        buttons.add(addToSecondSet);
     }
 
     /**
@@ -94,12 +132,21 @@ public class PanelControl extends GridPanel {
             for (Input input : inputs)
                 input.accept(ee);
 
+            for (Button button : buttons) {
+                if (lastWindowCS != null)
+                    button.checkOver(lastWindowCS.getRelativePos(new Vector2i(ee)));
+            }
             // событие нажатия мыши
         } else if (e instanceof EventMouseButton ee) {
             if (!lastInside || ! ee.isPressed())
                 return;
 
             Vector2i relPos = lastWindowCS.getRelativePos(lastMove);
+
+            // пробуем кликнуть по всем кнопкам
+            for (Button button : buttons) {
+                button.click(relPos);
+            }
 
             // перебираем поля ввода
             for (Input input : inputs) {
@@ -141,6 +188,10 @@ public class PanelControl extends GridPanel {
     @Override
     public void paintImpl(Canvas canvas, CoordinateSystem2i windowCS) {
         task.paint(canvas, windowCS);
+        // выводим кнопки
+        for (Button button : buttons) {
+            button.paint(canvas, windowCS);
+        }
         // выводим поля ввода
         for (Input input : inputs) {
             input.paint(canvas, windowCS);
