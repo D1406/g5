@@ -56,8 +56,8 @@ public class Point {
     @JsonIgnore
     public int getColor() {
         return switch (pointSet) {
-            case FIRST_SET -> Misc.getColor(0xCC, 0x00, 0x00, 0xFF);
-            case SECOND_SET -> Misc.getColor(0xCC, 0x00, 0xFF, 0x0);
+            case FIRST_SET -> Misc.getColor(80, 0, 0, 255);
+            case SECOND_SET -> Misc.getColor(80, 0, 255, 0);
         };
     }
 
