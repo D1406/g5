@@ -27,4 +27,12 @@ public class Colors {
      * цвет подложки панелей
      */
     public static final int PANEL_BACKGROUND_COLOR = Misc.getColor(32, 0, 0, 0);
+    /**
+     * Цвет подложки поля ввода
+     */
+    public static final int FIELD_BACKGROUND_COLOR = Misc.getColor(255, 255, 255, 255);
+    /**
+     * Цвет текста
+     */
+    public static final int FIELD_TEXT_COLOR = Misc.getColor(255, 0, 0, 0);
 }
