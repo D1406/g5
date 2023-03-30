@@ -8,6 +8,7 @@ import io.github.humbleui.jwm.EventMouseButton;
 import io.github.humbleui.jwm.EventMouseScroll;
 import io.github.humbleui.jwm.Window;
 import io.github.humbleui.skija.Canvas;
+import io.github.humbleui.skija.impl.Stats;
 import misc.CoordinateSystem2d;
 import misc.CoordinateSystem2i;
 import misc.Vector2d;
@@ -24,11 +25,16 @@ import static app.Fonts.FONT12;
  * Панель рисования
  */
 public class PanelRendering extends GridPanel {
+
+
     /**
      * Представление проблемы
      */
     public static Task task;
-
+    /**
+     * Статистика fps
+     */
+    private final Stats fpsStats = new Stats();
     /**
      * Панель управления
      *
@@ -46,9 +52,10 @@ public class PanelRendering extends GridPanel {
     public PanelRendering(
             Window window, boolean drawBG, int color, int padding, int gridWidth, int gridHeight,
             int gridX, int gridY, int colspan, int rowspan
-    ) {
-        super(window, drawBG, color, padding, gridWidth, gridHeight, gridX, gridY, colspan, rowspan);
 
+    ) {
+
+        super(window, drawBG, color, padding, gridWidth, gridHeight, gridX, gridY, colspan, rowspan);
         // ОСК от [-10.0,-10.0] до [10.0,10.0]
         CoordinateSystem2d cs = new CoordinateSystem2d(
                 new Vector2d(-10.0, -10.0), new Vector2d(10.0, 10.0)
@@ -105,6 +112,7 @@ public class PanelRendering extends GridPanel {
      */
     @Override
     public void paintImpl(Canvas canvas, CoordinateSystem2i windowCS) {
+        // рисуем задачу
         task.paint(canvas, windowCS);
         if (lastInside && lastMove != null)
             task.paintMouse(canvas, windowCS, FONT12, lastWindowCS.getRelativePos(lastMove));
@@ -146,4 +154,5 @@ public class PanelRendering extends GridPanel {
         PanelLog.info("load from " + path);
         loadFromFile(path);
     }
+
 }
