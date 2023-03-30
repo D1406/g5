@@ -2,6 +2,7 @@ package app;
 
 import controls.InputFactory;
 import controls.Label;
+import dialogs.PanelInfo;
 import io.github.humbleui.jwm.*;
 import io.github.humbleui.jwm.skija.EventFrameSkija;
 import io.github.humbleui.skija.Canvas;
@@ -19,13 +20,13 @@ import panels.PanelRendering;
 import java.io.File;
 import java.util.function.Consumer;
 
-import static app.Colors.APP_BACKGROUND_COLOR;
-import static app.Colors.PANEL_BACKGROUND_COLOR;
+import static app.Colors.*;
 
 /**
  * Класс окна приложения
  */
 public class Application implements Consumer<Event> {
+
     /**
      * окно приложения
      */
@@ -63,6 +64,10 @@ public class Application implements Consumer<Event> {
      */
     private boolean maximizedWindow;
     /**
+     * Панель информации
+     */
+    private final PanelInfo panelInfo;
+    /**
      * Конструктор окна приложения
      */
     /**
@@ -70,6 +75,7 @@ public class Application implements Consumer<Event> {
      */
     public static Task task;
     public Application() {
+
         // создаём окно
         window = App.makeWindow();
         // создаём панель рисования
@@ -92,7 +98,8 @@ public class Application implements Consumer<Event> {
                 window, true, PANEL_BACKGROUND_COLOR, PANEL_PADDING, 5, 3, 3, 2,
                 2, 1
         );
-
+        // панель информации
+         panelInfo = new PanelInfo(window, true, DIALOG_BACKGROUND_COLOR, PANEL_PADDING);
         // задаём обработчиком событий текущий объект
         window.setEventListener(this);
         window.setTitle("Java 2D");
@@ -137,7 +144,6 @@ public class Application implements Consumer<Event> {
      * @param canvas   низкоуровневый инструмент рисования примитивов от Skija
      * @param windowCS СК окна
      */
-
     public void paint(Canvas canvas, CoordinateSystem2i windowCS) {
         // запоминаем изменения (пока что там просто заливка цветом)
         canvas.save();
@@ -148,6 +154,11 @@ public class Application implements Consumer<Event> {
         panelControl.paint(canvas, windowCS);
         panelLog.paint(canvas, windowCS);
         panelHelp.paint(canvas, windowCS);
+        // рисуем диалоги
+        switch (currentMode) {
+            case INFO -> panelInfo.paint(canvas, windowCS);
+            case FILE -> {}
+        }
         canvas.restore();
     }
 
@@ -198,19 +209,53 @@ public class Application implements Consumer<Event> {
                 else
                     switch (eventKey.getKey()) {
                         case ESCAPE -> {
-                            window.close();
-                            // завершаем обработку, иначе уже разрушенный контекст
-                            // будет передан панелям
-                            return;
-
+                            // если сейчас основной режим
+                            if (currentMode.equals(Mode.WORK)) {
+                                // закрываем окно
+                                window.close();
+                                // завершаем обработку, иначе уже разрушенный контекст
+                                // будет передан панелям
+                                return;
+                            } else if (currentMode.equals(Mode.INFO)) {
+                                currentMode = Mode.WORK;
+                            }
                         }
                         case TAB -> InputFactory.nextTab();
                     }
             }
         }
-        panelControl.accept(e);
-        panelRendering.accept(e);
-        panelLog.accept(e);
+        switch (currentMode) {
+            case INFO -> panelInfo.accept(e);
+            case FILE -> {}
+            case WORK -> {
+                // передаём события на обработку панелям
+                panelControl.accept(e);
+                panelRendering.accept(e);
+                panelLog.accept(e);
+            }
+        }
 
     }
+    /**
+     * Режимы работы приложения
+     */
+    public enum Mode {
+        /**
+         * Основной режим работы
+         */
+        WORK,
+        /**
+         * Окно информации
+         */
+        INFO,
+        /**
+         * работа с файлами
+         */
+        FILE
+    }
+    /**
+     * Текущий режим(по умолчанию рабочий)
+     */
+    public static Mode currentMode = Mode.WORK;
+
 }
